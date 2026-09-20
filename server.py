@@ -55,10 +55,16 @@ class CustomDisputeRequest(BaseModel):
 @app.get("/", response_class=HTMLResponse)
 def serve_dashboard():
     """Serves the interactive single-page mission control dashboard."""
-    ui_path = os.path.join(os.path.dirname(__file__), "ui", "index.html")
-    if os.path.exists(ui_path):
-        with open(ui_path, "r", encoding="utf-8") as f:
-            return f.read()
+    candidate_paths = [
+        os.path.join(os.path.dirname(__file__), "ui", "index.html"),
+        os.path.join(os.getcwd(), "ui", "index.html"),
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "ui", "index.html"),
+        "ui/index.html"
+    ]
+    for p in candidate_paths:
+        if os.path.exists(p):
+            with open(p, "r", encoding="utf-8") as f:
+                return f.read()
     return "<h1>OmniSettlement Production Dashboard</h1>"
 
 
