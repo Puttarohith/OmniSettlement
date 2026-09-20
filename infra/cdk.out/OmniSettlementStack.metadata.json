@@ -1,0 +1,710 @@
+{
+  "/OmniSettlementStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/IdempotencyAndStateTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "IdempotencyAndStateTable04A2BA12"
+      }
+    }
+  ],
+  "/OmniSettlementStack/MarketplaceLedgerTable": [
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "MarketplaceLedgerTableB53D91C1"
+      }
+    }
+  ],
+  "/OmniSettlementStack/ApiEndpointUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiEndpointUrl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:320:5)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/SagaStateMachineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SagaStateMachineArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:325:5)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/AuditVaultBucketName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuditVaultBucketName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:330:5)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementKmsKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementKmsKey0C9A39C9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Key2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:21:30)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementAuditVault/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementAuditVault2347F4FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:30:25)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/IdempotencyAndStateTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IdempotencyAndStateTable04A2BA12"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Table2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:45:30)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/MarketplaceLedgerTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MarketplaceLedgerTableB53D91C1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Table2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:57:25)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/SettlementDLQ/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SettlementDLQ2F0BC6EF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:79:27)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/SettlementQueue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SettlementQueueA43F487A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Queue2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:88:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/IngestionLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestionLambdaEF25F265"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:134:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/TelemetryAggregatorLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TelemetryAggregatorLambdaA18DCDF8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:149:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/BedrockExtractorLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockExtractorLambda608FC117"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:160:27)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/InvariantEngineLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InvariantEngineLambda1C11BEDF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:178:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/LedgerWriterLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LedgerWriterLambda939061EC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:188:32)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/StripeDispatcherLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StripeDispatcherLambda8A978FD8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:201:26)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/SagaLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SagaLogGroup3A0E93A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new LogGroup2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:286:22)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementSagaMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementSagaMachine9B9BDE63"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new StateMachine2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:280:30)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApi03811CCA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Account": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiAccount4D978864"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiEndpoint906D1A95"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib, node internals...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementAuditVault/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementAuditVaultPolicy0950576E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Bucket2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:30:25)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/IngestionLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestionLambdaServiceRole447B9B96"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:134:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/TelemetryAggregatorLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TelemetryAggregatorLambdaServiceRole4990A98C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:149:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/BedrockExtractorLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockExtractorLambdaServiceRole8C2F89C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:160:27)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/InvariantEngineLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InvariantEngineLambdaServiceRole27F6C80C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:178:29)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/LedgerWriterLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LedgerWriterLambdaServiceRole0B49A3AF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:188:32)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/StripeDispatcherLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StripeDispatcherLambdaServiceRoleED8FFB2F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new Function2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:201:26)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementSagaMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementSagaMachineRoleACB2FB66"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new StateMachine2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:280:30)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/CloudWatchRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiCloudWatchRole1FBB3159"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiDeployment549D0CB4dce304a958b55bd0bea92fa474f79c5e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiDeploymentStageprod8BAA3E87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/IngestionLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IngestionLambdaServiceRoleDefaultPolicyD3A17461"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/TelemetryAggregatorLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TelemetryAggregatorLambdaServiceRoleDefaultPolicy1E5B596F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/BedrockExtractorLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BedrockExtractorLambdaServiceRoleDefaultPolicyC115CB11"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addToRolePolicy in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:169:19)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/LedgerWriterLambda/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LedgerWriterLambdaServiceRoleDefaultPolicyCD87A91C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...aws-cdk-lib...",
+        "(no user code in 10 frames, use --stack-trace-limit to capture more)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementSagaMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementSagaMachineRoleDefaultPolicyCA64CA6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new StateMachine2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:280:30)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiOPTIONSE8743543"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...new RestApi2 in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:297:17)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksD9B65A94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...RootResource.addResource in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:312:39)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksOPTIONSC245A93C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...RootResource.addResource in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:312:39)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksdispute3D7EB2D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addResource in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:313:46)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksdisputeOPTIONSB021AB16"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addResource in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:313:46)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)"
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/ApiPermission.OmniSettlementStackOmniSettlementApiA8A89FB8.POST..webhooks.dispute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksdisputePOSTApiPermissionOmniSettlementStackOmniSettlementApiA8A89FB8POSTwebhooksdispute67AF5788"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addMethod in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:315:21)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/ApiPermission.Test.OmniSettlementStackOmniSettlementApiA8A89FB8.POST..webhooks.dispute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksdisputePOSTApiPermissionTestOmniSettlementStackOmniSettlementApiA8A89FB8POSTwebhooksdispute6D337882"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addMethod in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:315:21)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OmniSettlementApiwebhooksdisputePOST07E91B17"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "...WrappedClass.addMethod in aws-cdk-lib...",
+        "new OmniSettlementStack (E:\\build bharat hackathon\\infra\\lib\\OmniSettlementStack.ts:315:21)",
+        "<anonymous> (E:\\build bharat hackathon\\infra\\bin\\infra.ts:7:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}

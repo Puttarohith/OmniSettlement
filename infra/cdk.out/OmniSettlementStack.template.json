@@ -1,0 +1,1930 @@
+{
+ "Description": "OmniSettlement: Multi-Party Marketplace Settlement & Dispute Reconciliation Platform",
+ "Resources": {
+  "OmniSettlementKmsKey0C9A39C9": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "KMS CMK for OmniSettlement ledger, audit vault, and queue encryption",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::123456789012:root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementKmsKey/Resource"
+   }
+  },
+  "OmniSettlementAuditVault2347F4FD": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "OmniSettlementKmsKey0C9A39C9",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "BucketName": "omnisettlement-audit-vault-123456789012-us-east-1",
+    "ObjectLockConfiguration": {
+     "ObjectLockEnabled": "Enabled",
+     "Rule": {
+      "DefaultRetention": {
+       "Days": 90,
+       "Mode": "COMPLIANCE"
+      }
+     }
+    },
+    "ObjectLockEnabled": true,
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementAuditVault/Resource"
+   }
+  },
+  "OmniSettlementAuditVaultPolicy0950576E": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "OmniSettlementAuditVault2347F4FD"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OmniSettlementAuditVault2347F4FD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OmniSettlementAuditVault2347F4FD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementAuditVault/Policy/Resource"
+   }
+  },
+  "IdempotencyAndStateTable04A2BA12": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "idempotency_key",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "idempotency_key",
+      "KeyType": "HASH"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "SSESpecification": {
+     "KMSMasterKeyId": {
+      "Fn::GetAtt": [
+       "OmniSettlementKmsKey0C9A39C9",
+       "Arn"
+      ]
+     },
+     "SSEEnabled": true,
+     "SSEType": "KMS"
+    },
+    "TableName": "IdempotencyAndState",
+    "TimeToLiveSpecification": {
+     "AttributeName": "expires_at",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/IdempotencyAndStateTable/Resource"
+   }
+  },
+  "MarketplaceLedgerTableB53D91C1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "account_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "entry_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "order_id",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "created_at",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "OrderIdIndex",
+      "KeySchema": [
+       {
+        "AttributeName": "order_id",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "created_at",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "KeySchema": [
+     {
+      "AttributeName": "account_id",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "entry_id",
+      "KeyType": "RANGE"
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "SSESpecification": {
+     "KMSMasterKeyId": {
+      "Fn::GetAtt": [
+       "OmniSettlementKmsKey0C9A39C9",
+       "Arn"
+      ]
+     },
+     "SSEEnabled": true,
+     "SSEType": "KMS"
+    },
+    "TableName": "MarketplaceLedger"
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/MarketplaceLedgerTable/Resource"
+   }
+  },
+  "SettlementDLQ2F0BC6EF": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": true,
+    "FifoQueue": true,
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "OmniSettlementKmsKey0C9A39C9",
+      "Arn"
+     ]
+    },
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "SettlementDLQ.fifo"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/SettlementDLQ/Resource"
+   }
+  },
+  "SettlementQueueA43F487A": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": true,
+    "FifoQueue": true,
+    "KmsMasterKeyId": {
+     "Fn::GetAtt": [
+      "OmniSettlementKmsKey0C9A39C9",
+      "Arn"
+     ]
+    },
+    "QueueName": "SettlementQueue.fifo",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "SettlementDLQ2F0BC6EF",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/SettlementQueue/Resource"
+   }
+  },
+  "IngestionLambdaServiceRole447B9B96": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/IngestionLambda/ServiceRole/Resource"
+   }
+  },
+  "IngestionLambdaServiceRoleDefaultPolicyD3A17461": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IdempotencyAndStateTable04A2BA12",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OmniSettlementKmsKey0C9A39C9",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IdempotencyAndStateTable04A2BA12",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:SendMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SettlementQueueA43F487A",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OmniSettlementKmsKey0C9A39C9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "IngestionLambdaServiceRoleDefaultPolicyD3A17461",
+    "Roles": [
+     {
+      "Ref": "IngestionLambdaServiceRole447B9B96"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/IngestionLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "IngestionLambdaEF25F265": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-IngestionHandler",
+    "Handler": "services.ingestion.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "IngestionLambdaServiceRole447B9B96",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 10
+   },
+   "DependsOn": [
+    "IngestionLambdaServiceRoleDefaultPolicyD3A17461",
+    "IngestionLambdaServiceRole447B9B96"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/IngestionLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "TelemetryAggregatorLambdaServiceRole4990A98C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/TelemetryAggregatorLambda/ServiceRole/Resource"
+   }
+  },
+  "TelemetryAggregatorLambdaServiceRoleDefaultPolicy1E5B596F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetObject*",
+        "s3:GetBucket*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OmniSettlementAuditVault2347F4FD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "OmniSettlementAuditVault2347F4FD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OmniSettlementKmsKey0C9A39C9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TelemetryAggregatorLambdaServiceRoleDefaultPolicy1E5B596F",
+    "Roles": [
+     {
+      "Ref": "TelemetryAggregatorLambdaServiceRole4990A98C"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/TelemetryAggregatorLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "TelemetryAggregatorLambdaA18DCDF8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-TelemetryAggregator",
+    "Handler": "services.telemetry_aggregator.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "TelemetryAggregatorLambdaServiceRole4990A98C",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "TelemetryAggregatorLambdaServiceRoleDefaultPolicy1E5B596F",
+    "TelemetryAggregatorLambdaServiceRole4990A98C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/TelemetryAggregatorLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BedrockExtractorLambdaServiceRole8C2F89C8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/BedrockExtractorLambda/ServiceRole/Resource"
+   }
+  },
+  "BedrockExtractorLambdaServiceRoleDefaultPolicyC115CB11": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock:InvokeModel",
+       "Effect": "Allow",
+       "Resource": [
+        "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-5-sonnet-20241022-v2:0",
+        "arn:aws:bedrock:*::foundation-model/*"
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BedrockExtractorLambdaServiceRoleDefaultPolicyC115CB11",
+    "Roles": [
+     {
+      "Ref": "BedrockExtractorLambdaServiceRole8C2F89C8"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/BedrockExtractorLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "BedrockExtractorLambda608FC117": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-BedrockExtractor",
+    "Handler": "services.bedrock_extractor.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BedrockExtractorLambdaServiceRole8C2F89C8",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 60
+   },
+   "DependsOn": [
+    "BedrockExtractorLambdaServiceRoleDefaultPolicyC115CB11",
+    "BedrockExtractorLambdaServiceRole8C2F89C8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/BedrockExtractorLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "InvariantEngineLambdaServiceRole27F6C80C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/InvariantEngineLambda/ServiceRole/Resource"
+   }
+  },
+  "InvariantEngineLambda1C11BEDF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-InvariantEngine",
+    "Handler": "services.invariant_engine.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "InvariantEngineLambdaServiceRole27F6C80C",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 15
+   },
+   "DependsOn": [
+    "InvariantEngineLambdaServiceRole27F6C80C"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/InvariantEngineLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "LedgerWriterLambdaServiceRole0B49A3AF": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/LedgerWriterLambda/ServiceRole/Resource"
+   }
+  },
+  "LedgerWriterLambdaServiceRoleDefaultPolicyCD87A91C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MarketplaceLedgerTableB53D91C1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MarketplaceLedgerTableB53D91C1",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OmniSettlementKmsKey0C9A39C9",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MarketplaceLedgerTableB53D91C1",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MarketplaceLedgerTableB53D91C1",
+             "Arn"
+            ]
+           },
+           "/index/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:Query",
+        "dynamodb:GetItem",
+        "dynamodb:Scan",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IdempotencyAndStateTable04A2BA12",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "IdempotencyAndStateTable04A2BA12",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:ReEncrypt*",
+        "kms:GenerateDataKey*"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OmniSettlementKmsKey0C9A39C9",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "LedgerWriterLambdaServiceRoleDefaultPolicyCD87A91C",
+    "Roles": [
+     {
+      "Ref": "LedgerWriterLambdaServiceRole0B49A3AF"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/LedgerWriterLambda/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "LedgerWriterLambda939061EC": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-LedgerWriter",
+    "Handler": "services.ledger_writer.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "LedgerWriterLambdaServiceRole0B49A3AF",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "LedgerWriterLambdaServiceRoleDefaultPolicyCD87A91C",
+    "LedgerWriterLambdaServiceRole0B49A3AF"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/LedgerWriterLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "StripeDispatcherLambdaServiceRoleED8FFB2F": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/StripeDispatcherLambda/ServiceRole/Resource"
+   }
+  },
+  "StripeDispatcherLambda8A978FD8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-123456789012-us-east-1",
+     "S3Key": "a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "IDEMPOTENCY_TABLE": {
+       "Ref": "IdempotencyAndStateTable04A2BA12"
+      },
+      "MARKETPLACE_LEDGER_TABLE": {
+       "Ref": "MarketplaceLedgerTableB53D91C1"
+      },
+      "SQS_QUEUE_URL": {
+       "Ref": "SettlementQueueA43F487A"
+      },
+      "AUDIT_BUCKET": {
+       "Ref": "OmniSettlementAuditVault2347F4FD"
+      },
+      "BEDROCK_MODEL_ID": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
+    "FunctionName": "OmniSettlement-StripeDispatcher",
+    "Handler": "services.stripe_dispatcher.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "StripeDispatcherLambdaServiceRoleED8FFB2F",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.10",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "StripeDispatcherLambdaServiceRoleED8FFB2F"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/StripeDispatcherLambda/Resource",
+    "aws:asset:path": "asset.a14f9df2b5eb888224a0ab56a90c5430d40b936e050f00e1b138b3fefcf056e8",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "SagaLogGroup3A0E93A4": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 30
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/SagaLogGroup/Resource"
+   }
+  },
+  "OmniSettlementSagaMachineRoleACB2FB66": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementSagaMachine/Role/Resource"
+   }
+  },
+  "OmniSettlementSagaMachineRoleDefaultPolicyCA64CA6B": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "TelemetryAggregatorLambdaA18DCDF8",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "TelemetryAggregatorLambdaA18DCDF8",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "BedrockExtractorLambda608FC117",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "BedrockExtractorLambda608FC117",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "InvariantEngineLambda1C11BEDF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "InvariantEngineLambda1C11BEDF",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "LedgerWriterLambda939061EC",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "LedgerWriterLambda939061EC",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StripeDispatcherLambda8A978FD8",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StripeDispatcherLambda8A978FD8",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:GetLogDelivery",
+        "logs:UpdateLogDelivery",
+        "logs:DeleteLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutResourcePolicy",
+        "logs:DescribeResourcePolicies",
+        "logs:DescribeLogGroups"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "xray:PutTraceSegments",
+        "xray:PutTelemetryRecords",
+        "xray:GetSamplingRules",
+        "xray:GetSamplingTargets"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "OmniSettlementSagaMachineRoleDefaultPolicyCA64CA6B",
+    "Roles": [
+     {
+      "Ref": "OmniSettlementSagaMachineRoleACB2FB66"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementSagaMachine/Role/DefaultPolicy/Resource"
+   }
+  },
+  "OmniSettlementSagaMachine9B9BDE63": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"AggregateTelemetryStep\",\"States\":{\"AggregateTelemetryStep\":{\"Next\":\"ExtractTimelineBedrockStep\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ExecuteCompensatingRollback\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "TelemetryAggregatorLambdaA18DCDF8",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"ExtractTimelineBedrockStep\":{\"Next\":\"ComputeZeroSumPlanStep\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ExecuteCompensatingRollback\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "BedrockExtractorLambda608FC117",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"ComputeZeroSumPlanStep\":{\"Next\":\"RequiresHumanReviewChoice\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ExecuteCompensatingRollback\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "InvariantEngineLambda1C11BEDF",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"RequiresHumanReviewChoice\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.settlement_plan.requires_human_review\",\"BooleanEquals\":true,\"Next\":\"EscrowHeldForHumanReview\"}],\"Default\":\"CommitLedgerTransactStep\"},\"CommitLedgerTransactStep\":{\"Next\":\"DispatchStripeGatewayStep\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ExecuteCompensatingRollback\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "LedgerWriterLambda939061EC",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"DispatchStripeGatewayStep\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"ResultPath\":\"$.error\",\"Next\":\"ExecuteCompensatingRollback\"}],\"Type\":\"Task\",\"OutputPath\":\"$.Payload\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "StripeDispatcherLambda8A978FD8",
+         "Arn"
+        ]
+       },
+       "\",\"Payload.$\":\"$\"}},\"ExecuteCompensatingRollback\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.rollback_result\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::lambda:invoke\",\"Parameters\":{\"FunctionName\":\"",
+       {
+        "Fn::GetAtt": [
+         "StripeDispatcherLambda8A978FD8",
+         "Arn"
+        ]
+       },
+       "\",\"Payload\":{\"is_rollback\":true,\"order_id.$\":\"$.order_id\",\"reason\":\"Saga step failed. Executing compensating rollback.\"}}},\"EscrowHeldForHumanReview\":{\"Type\":\"Pass\",\"Result\":{\"status\":\"PENDING_HUMAN_ARBITRATION\",\"message\":\"Dispute flagged for manual review due to low confidence or policy threshold.\"},\"ResultPath\":\"$.arbitration_status\",\"End\":true}},\"TimeoutSeconds\":600}"
+      ]
+     ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "SagaLogGroup3A0E93A4",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "Level": "ALL"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "OmniSettlementSagaMachineRoleACB2FB66",
+      "Arn"
+     ]
+    },
+    "StateMachineName": "OmniSettlement-DisputeSaga",
+    "TracingConfiguration": {
+     "Enabled": true
+    }
+   },
+   "DependsOn": [
+    "OmniSettlementSagaMachineRoleDefaultPolicyCA64CA6B",
+    "OmniSettlementSagaMachineRoleACB2FB66"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementSagaMachine/Resource"
+   }
+  },
+  "OmniSettlementApi03811CCA": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Ingests dispute and cancellation webhooks with HMAC validation and idempotency guarantees.",
+    "Name": "OmniSettlement Webhook & Dispute Ingestion Service"
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Resource"
+   }
+  },
+  "OmniSettlementApiCloudWatchRole1FBB3159": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "apigateway.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/CloudWatchRole/Resource"
+   }
+  },
+  "OmniSettlementApiAccount4D978864": {
+   "Type": "AWS::ApiGateway::Account",
+   "Properties": {
+    "CloudWatchRoleArn": {
+     "Fn::GetAtt": [
+      "OmniSettlementApiCloudWatchRole1FBB3159",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "OmniSettlementApi03811CCA"
+   ],
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Account"
+   }
+  },
+  "OmniSettlementApiDeployment549D0CB4dce304a958b55bd0bea92fa474f79c5e": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Ingests dispute and cancellation webhooks with HMAC validation and idempotency guarantees.",
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "DependsOn": [
+    "OmniSettlementApiOPTIONSE8743543",
+    "OmniSettlementApiwebhooksdisputeOPTIONSB021AB16",
+    "OmniSettlementApiwebhooksdisputePOST07E91B17",
+    "OmniSettlementApiwebhooksdispute3D7EB2D8",
+    "OmniSettlementApiwebhooksOPTIONSC245A93C",
+    "OmniSettlementApiwebhooksD9B65A94"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "OmniSettlementApiDeploymentStageprod8BAA3E87": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "OmniSettlementApiDeployment549D0CB4dce304a958b55bd0bea92fa474f79c5e"
+    },
+    "MethodSettings": [
+     {
+      "DataTraceEnabled": false,
+      "HttpMethod": "*",
+      "MetricsEnabled": true,
+      "ResourcePath": "/*"
+     }
+    ],
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    },
+    "StageName": "prod",
+    "TracingEnabled": true
+   },
+   "DependsOn": [
+    "OmniSettlementApiAccount4D978864"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "OmniSettlementApiOPTIONSE8743543": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Signature-SHA256,Idempotency-Key,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "OmniSettlementApi03811CCA",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/OPTIONS/Resource"
+   }
+  },
+  "OmniSettlementApiwebhooksD9B65A94": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "OmniSettlementApi03811CCA",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "webhooks",
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/Resource"
+   }
+  },
+  "OmniSettlementApiwebhooksOPTIONSC245A93C": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Signature-SHA256,Idempotency-Key,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "OmniSettlementApiwebhooksD9B65A94"
+    },
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/OPTIONS/Resource"
+   }
+  },
+  "OmniSettlementApiwebhooksdispute3D7EB2D8": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Ref": "OmniSettlementApiwebhooksD9B65A94"
+    },
+    "PathPart": "dispute",
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/Resource"
+   }
+  },
+  "OmniSettlementApiwebhooksdisputeOPTIONSB021AB16": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Signature-SHA256,Idempotency-Key,Authorization'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "OmniSettlementApiwebhooksdispute3D7EB2D8"
+    },
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/OPTIONS/Resource"
+   }
+  },
+  "OmniSettlementApiwebhooksdisputePOSTApiPermissionOmniSettlementStackOmniSettlementApiA8A89FB8POSTwebhooksdispute67AF5788": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestionLambdaEF25F265",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:123456789012:",
+       {
+        "Ref": "OmniSettlementApi03811CCA"
+       },
+       "/",
+       {
+        "Ref": "OmniSettlementApiDeploymentStageprod8BAA3E87"
+       },
+       "/POST/webhooks/dispute"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/ApiPermission.OmniSettlementStackOmniSettlementApiA8A89FB8.POST..webhooks.dispute"
+   }
+  },
+  "OmniSettlementApiwebhooksdisputePOSTApiPermissionTestOmniSettlementStackOmniSettlementApiA8A89FB8POSTwebhooksdispute6D337882": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "IngestionLambdaEF25F265",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":execute-api:us-east-1:123456789012:",
+       {
+        "Ref": "OmniSettlementApi03811CCA"
+       },
+       "/test-invoke-stage/POST/webhooks/dispute"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/ApiPermission.Test.OmniSettlementStackOmniSettlementApiA8A89FB8.POST..webhooks.dispute"
+   }
+  },
+  "OmniSettlementApiwebhooksdisputePOST07E91B17": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "IngestionLambdaEF25F265",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "OmniSettlementApiwebhooksdispute3D7EB2D8"
+    },
+    "RestApiId": {
+     "Ref": "OmniSettlementApi03811CCA"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/OmniSettlementApi/Default/webhooks/dispute/POST/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WQQW/CMAyFfwv34DGGtDMwbZoAjZXdkUlNCW2TDiegKsp/n5IWlZ3e5/cs2/IUpq8TmIzwxmOZl+NKHcDvLMpS4I33vqwZ/IpasTzqFbVB8Av4hZMl2Wj11MnWVEq2g93XXbFApiDyVmNt8gP4HzxUFHsTBMG/DP7bkUtmgiAqrA85gn93WlpldIweeUuXWjEro4NQWIPPTDc06XBPR/H4PTKTZZhHEWypOfbzeG+RS4Z12vmpr6ak/w3glyejJIktMoudRUsblCel08rHOojKFAx+bYqPi3FNzO8cBDaqQEs3bMFnxHbeqHTzgHMpjdNWvFFTmbYmnZ79UO0sFvetBYmM2LiLpPhksSF7MnkMe7qn/ZLEIQx2+kUcpHQRe76cbZwNQpuc4MxP1+kMnmcwGZ1ZqfHFaatqgqzTP+fcmT5BAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "OmniSettlementStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "OmniSettlementApiEndpoint906D1A95": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "OmniSettlementApi03811CCA"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "OmniSettlementApiDeploymentStageprod8BAA3E87"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "ApiEndpointUrl": {
+   "Description": "API Gateway REST API Endpoint for Webhook Ingestion",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "OmniSettlementApi03811CCA"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "OmniSettlementApiDeploymentStageprod8BAA3E87"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "SagaStateMachineArn": {
+   "Description": "Step Functions Saga State Machine ARN",
+   "Value": {
+    "Ref": "OmniSettlementSagaMachine9B9BDE63"
+   }
+  },
+  "AuditVaultBucketName": {
+   "Description": "S3 WORM Audit Vault Bucket Name",
+   "Value": {
+    "Ref": "OmniSettlementAuditVault2347F4FD"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
